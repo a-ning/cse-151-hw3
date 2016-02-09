@@ -10,6 +10,18 @@ import java.util.*;
 import java.text.*;
 
 public class hw3 {
+	/* Node class */
+	private class Node {
+		public int label;
+		public Node left, right;
+
+		public Node () {
+			label = -1;
+			left = null;
+			right = null;
+		}
+	}
+
 	/* function to read files */
 	public static LinkedList<Integer[]> read (File file) {
 		LinkedList<Integer[]> res = new LinkedList<Integer[]>();
@@ -47,6 +59,9 @@ public class hw3 {
 	}
 
 	public static void main (String[] args) {
+		LinkedList<Integer[]> trainData;
 
+		File trainFile = new File("hw3train.txt");
+		trainData = read(trainFile);
 	}
 }
