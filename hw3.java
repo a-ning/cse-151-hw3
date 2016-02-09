@@ -10,6 +10,9 @@ import java.util.*;
 import java.text.*;
 
 public class hw3 {
+
+	static Node root;
+
 	/* Node class */
 	private class Node {
 		public int label;
@@ -23,8 +26,8 @@ public class hw3 {
 	}
 
 	/* function to read files */
-	public static LinkedList<Integer[]> read (File file) {
-		LinkedList<Integer[]> res = new LinkedList<Integer[]>();
+	public static LinkedList<float[]> read (File file) {
+		LinkedList<float[]> res = new LinkedList<float[]>();
 		String line = null;
 
 		try {
@@ -36,15 +39,15 @@ public class hw3 {
 				/* split each line by spaces */
 				String[] vals = line.split(" ");
 				/* array to store values */
-				Integer[] intVals = new Integer[vals.length];
+				float[] fVals = new float[vals.length];
 
 				/* store values as integers */
-				for(int i = 0; i < intVals.length; i++) {
-					intVals[i] = Integer.parseInt(vals[i]);
+				for(int i = 0; i < fVals.length; i++) {
+					fVals[i] = Float.parseFloat(vals[i]);
 				}
 
 				/* add to LL */
-				res.add(intVals);
+				res.add(fVals);
 			}
 
 			/* close file */
@@ -58,10 +61,13 @@ public class hw3 {
 		return res;
 	}
 
+	/* main function */
 	public static void main (String[] args) {
-		LinkedList<Integer[]> trainData;
+		LinkedList<float[]> trainData;
 
 		File trainFile = new File("hw3train.txt");
 		trainData = read(trainFile);
+
+		root = new hw3().new Node();
 	}
 }
