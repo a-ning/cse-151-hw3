@@ -61,13 +61,22 @@ public class hw3 {
 		return res;
 	}
 
+	/* function to build the tree*/
+	public static Node build (Node r, LinkedList<float[]> data) {
+		return r;
+	}
+
 	/* main function */
 	public static void main (String[] args) {
-		LinkedList<float[]> trainData;
+		LinkedList<float[]> trainData, testData;
 
 		File trainFile = new File("hw3train.txt");
 		trainData = read(trainFile);
+		File testFile = new File("hw3test.txt");
+		testData = read(testFile);
 
 		root = new hw3().new Node();
+
+		root = build(root, trainData);
 	}
 }
