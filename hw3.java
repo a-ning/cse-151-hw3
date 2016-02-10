@@ -70,9 +70,8 @@ public class hw3 {
 		float[] currNode, nextNode;					/* node variables */
 		Iterator<float[]> dataIt = data.iterator();	/* iterator thru data */
 
-		
-
 		LinkedList<float[]> attr0, attr1, attr2, attr3;
+		float[] ig0, ig1, ig2, ig3;
 
 		currNode = data.get(0);
 
@@ -94,13 +93,99 @@ public class hw3 {
 		}
 
 		/* if impure: */
+
 		/* sort by features */
 		attr0 = sort (data, 0);
 		attr1 = sort (data, 1);
 		attr2 = sort (data, 2);
 		attr3 = sort (data, 3);
 
+		ig0 = findIG (attr0, 0);
+
 		return r;
+	}
+
+	/* function to find best information gap */
+	public static float[] findIG (LinkedList<float[]> data, int feature) {
+		int currLabel;
+		int amt1A, amt2A, amt3A,	/* counts */
+			amt1B, amt2B, amt3B;
+		double entCond;				/* entropy */
+
+		/* take pairs of data points */
+		for (int i = 0; i < data.size() - 2; i++) {
+			amt1A = 0;
+			amt2A = 0;
+			amt3A = 0;
+			for (int j = 0; j <= i; j++) {
+				currLabel = (int)data.get(j)[4];
+				if (currLabel == 1) { amt1A++; }
+				else if (currLabel == 2) { amt2A++; }
+				else if (currLabel == 3) { amt3A++; }
+			}
+
+			amt1B = 0;
+			amt2B = 0;
+			amt3B = 0;
+			for (int j = 0; j < data.size() - 1; j++) {
+				currLabel = (int)data.get(j)[4];
+				if (currLabel == 1) { amt1B++; }
+				else if (currLabel == 2) { amt2B++; }
+				else if (currLabel == 3) { amt3B++; }
+			}
+
+			double size = (double)data.size();
+
+			entCond = calcEntCond (amt1A, amt2A, amt3A, 
+								   amt1B, amt2B, amt3B, size);
+		}
+
+		return data.get(0);
+	}
+
+	/* function to calculate conditional entropy */
+	public static double calcEntCond (int amt1A, int amt2A, int amt3A, 
+		int amt1B, int amt2B, int amt3B, double size) {
+		double totalPrA, totalPrB;
+		double pr1A, pr2A, pr3A,
+			   pr1B, pr2B, pr3B;
+		double log1A, log2A, log3A,	/* logs */ 
+			   log1B, log2B, log3B;
+		double entA, entB, entCond;	/* entropy */
+
+		/* total probabilities */
+		totalPrA = (amt1A + amt2A + amt3A) / size;
+		totalPrB = (amt1B + amt2B + amt3B) / size;
+
+		/* partial probabilities */
+		pr1A = (amt1A / size) / totalPrA;
+		pr2A = (amt2A / size) / totalPrA;
+		pr3A = (amt3A / size) / totalPrA;
+		pr1B = (amt1B / size) / totalPrB;
+		pr2B = (amt2B / size) / totalPrB;
+		pr3B = (amt3B / size) / totalPrB;
+
+		/* calculate logs */
+		log1A = 0;
+		log2A = 0;
+		log3A = 0;
+		log1B = 0;
+		log2B = 0;
+		log3B = 0;
+
+		if (pr1A != 0) { log1A = Math.log(pr1A); }
+		if (pr2A != 0) { log2A = Math.log(pr2A); }
+		if (pr3A != 0) { log3A = Math.log(pr3A); }
+		if (pr1B != 0) { log1B = Math.log(pr1B); }
+		if (pr2B != 0) { log2B = Math.log(pr2B); }
+		if (pr3B != 0) { log3B = Math.log(pr3B); }
+
+		entA = -(pr1A * log1A) - (pr2A * log2A) - (pr3A * log3A);
+		entB = -(pr1B * log1B) - (pr2B * log2B) - (pr3B * log3B);
+
+		entCond = (totalPrA * entA) + (totalPrB * entB);
+
+		return entCond;
 	}
 
 	/* function to sort the data based on feature */
