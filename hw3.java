@@ -12,6 +12,7 @@ import java.text.*;
 public class hw3 {
 
 	static Node root;
+	static String indent;
 
 	/* Node class */
 	private class Node {
@@ -242,6 +243,8 @@ public class hw3 {
 		LinkedList<float[]> attr0, attr1, attr2, attr3;
 		float[] ig0, ig1, ig2, ig3;
 
+		LinkedList<float[]> lte, gt;	/* decision branches */
+
 		currNode = data.get(0);
 
 		/* iterate through the data */
@@ -275,12 +278,69 @@ public class hw3 {
 		ig2 = findIG (attr2, 2);
 		ig3 = findIG (attr3, 3);
 
+		/* pick feature and threshold that maximizes info gain */
+		int feature = 0;
+		float threshold = ig0[1];
+		float checkIG = ig0[0];
+		LinkedList<float[]> newData = attr0;
+		if (checkIG < ig1[0]) {
+			feature = 1;
+			threshold = ig1[1];
+			checkIG = ig1[0];
+			newData = attr1;
+		}
+		if (checkIG < ig2[0]) {
+			feature = 2;
+			threshold = ig2[1];
+			checkIG = ig2[0];
+			newData = attr2;
+		}
+		if (checkIG < ig3[0]) {
+			feature = 3;
+			threshold = ig3[1];
+			checkIG = ig3[0];
+			newData = attr3;
+		}
+
+		/* make branches - data has previously been sorted */
+		lte = new LinkedList<float[]>();
+		gt = new LinkedList<float[]>();
+		for (int i = 0; i < (int)threshold + 1; i++) {
+			lte.push(newData.get(i));
+		}
+		for (int i = (int)threshold + 1; i < newData.size(); i++) {
+			gt.push(newData.get(i));
+		}
+
+		/* insert information into node for the tree */
+		r.threshold = newData.get((int)threshold)[feature];
+		r.label = feature;
+		r.left = new hw3().new Node();
+		r.right = new hw3().new Node();
+
+		/* build the tree recursively */
+
+		System.out.println("Is x" + (r.label + 1) + 
+						   " <= " + r.threshold + "?" );
+		indent = indent + "  | ";
+
+		System.out.print(indent + "Yes: ");
+		r.left = build (r.left, lte);
+
+		System.out.print(indent + "No: ");
+		r.right = build (r.right, gt);
+
+		if (indent.length() > 1) {
+			indent = indent.substring(0, indent.length() - 1);
+		}
+
 		return r;
 	}
 
 	/* main function */
 	public static void main (String[] args) {
 		LinkedList<float[]> trainData, testData;
+		indent = "";
 
 		File trainFile = new File("hw3train.txt");
 		trainData = read(trainFile);
