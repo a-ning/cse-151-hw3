@@ -70,6 +70,10 @@ public class hw3 {
 		float[] currNode, nextNode;					/* node variables */
 		Iterator<float[]> dataIt = data.iterator();	/* iterator thru data */
 
+		
+
+		LinkedList<float[]> attr0, attr1, attr2, attr3;
+
 		currNode = data.get(0);
 
 		/* iterate through the data */
@@ -90,9 +94,57 @@ public class hw3 {
 		}
 
 		/* if impure: */
-		// write function to sort the data
+		/* sort by features */
+		attr0 = sort (data, 0);
+		attr1 = sort (data, 1);
+		attr2 = sort (data, 2);
+		attr3 = sort (data, 3);
 
 		return r;
+	}
+
+	/* function to sort the data based on feature */
+	public static LinkedList<float[]> sort (LinkedList<float[]> data, 
+		int feature) {
+		int halfway;											/* mid pt */
+		float[] halfpt, currpt;
+		LinkedList<float[]> left = new LinkedList<float[]>();	/* < list */
+		LinkedList<float[]> right = new LinkedList<float[]>();	/* > list */
+		LinkedList<float[]> combined = new LinkedList<float[]>();
+
+		if (data.size() <= 1) { return data; }
+
+		/* get pivot pt */
+		halfway = data.size() / 2;
+		halfpt = data.get(halfway);
+		data.remove(halfway);
+
+		/* loop through the data and sort by comparing to mid pt */
+		for (int i = 0; i < data.size(); i++) {
+			currpt = data.get(i);
+			if (currpt[feature] <= halfpt[feature]) {
+				left.push(currpt);
+			} else {
+				right.push(currpt);
+			}
+		}
+
+		/* proceed to sort recursively */
+		left = sort (left, feature);
+		right = sort (right, feature);
+
+		/* put the lists together */
+		for (int i = 0; i < left.size(); i++) {
+			combined.push(left.get(i));
+		}
+
+		combined.push(halfpt);
+
+		for (int i = 0; i < right.size(); i++) {
+			combined.push(right.get(i));
+		}
+
+		return combined;
 	}
 
 	/* main function */
