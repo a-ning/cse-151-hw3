@@ -178,7 +178,7 @@ public class hw3 {
 		return entCond;
 	}
 
-	/* function to find best information gap */
+	/* function to find best information gain */
 	public static float[] findIG (LinkedList<float[]> data, int feature) {
 		float[] res;				/* result: best ig and its index */
 		int currLabel;
