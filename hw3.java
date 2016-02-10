@@ -15,13 +15,16 @@ public class hw3 {
 
 	/* Node class */
 	private class Node {
-		public int label;
+		public int label, count;
+		public float threshold;
 		public Node left, right;
 
 		public Node () {
 			label = -1;
+			threshold = -1;
 			left = null;
 			right = null;
+			count = 0;
 		}
 	}
 
@@ -63,6 +66,32 @@ public class hw3 {
 
 	/* function to build the tree*/
 	public static Node build (Node r, LinkedList<float[]> data) {
+		boolean isPure = true;						/* flag - check if pure */
+		float[] currNode, nextNode;					/* node variables */
+		Iterator<float[]> dataIt = data.iterator();	/* iterator thru data */
+
+		currNode = data.get(0);
+
+		/* iterate through the data */
+		for (int i = 0; i < data.size(); i++) {
+			nextNode = data.get(i);
+			/* check if labels are different - if so, node is impure */
+			if (currNode[4] != nextNode[4]) {
+				isPure = false;
+			}
+			currNode = nextNode;
+		}
+
+		/* return if pure */
+		if (isPure == true) {
+			r.label = (int)currNode[4];
+			System.out.println("Label " + r.label);
+			return r;
+		}
+
+		/* if impure: */
+		// write function to sort the data
+
 		return r;
 	}
 
