@@ -327,11 +327,11 @@ public class hw3 {
 		System.out.print(indent + "Yes: ");
 		r.left = build (r.left, lte);
 
-		System.out.print(indent + "No: ");
+		System.out.print(indent + "No:  ");
 		r.right = build (r.right, gt);
 
-		if (indent.length() > 1) {
-			indent = indent.substring(0, indent.length() - 1);
+		if (indent.length() > 4) {
+			indent = indent.substring(0, indent.length() - 4);
 		}
 
 		return r;
