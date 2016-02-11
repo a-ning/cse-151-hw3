@@ -16,12 +16,13 @@ public class hw3 {
 
 	/* Node class */
 	private class Node {
-		public int label, count;
+		public int label, feature, count;
 		public float threshold;
 		public Node left, right;
 
 		public Node () {
 			label = -1;
+			feature = -1;
 			threshold = -1;
 			left = null;
 			right = null;
@@ -235,15 +236,21 @@ public class hw3 {
 	}
 
 	/* function to build the tree*/
-	public static Node build (Node r, LinkedList<float[]> data) {
+	public static Node build (Node r, LinkedList<float[]> data, LinkedList<float[]> modData) {
+		LinkedList<float[]> dataCopy;				/* backup */
 		boolean isPure = true;						/* flag - check if pure */
 		float[] currNode, nextNode;					/* node variables */
-		Iterator<float[]> dataIt = data.iterator();	/* iterator thru data */
 
 		LinkedList<float[]> attr0, attr1, attr2, attr3;
 		float[] ig0, ig1, ig2, ig3;
 
 		LinkedList<float[]> lte, gt;	/* decision branches */
+
+		/* make a copy of the data */
+		dataCopy = new LinkedList<float[]>();
+		for (int i = 0; i < modData.size(); i++) {
+			dataCopy.push(modData.get(i));
+		}
 
 		currNode = data.get(0);
 
@@ -314,27 +321,60 @@ public class hw3 {
 
 		/* insert information into node for the tree */
 		r.threshold = newData.get((int)threshold)[feature];
-		r.label = feature;
+		r.feature = feature;
 		r.left = new hw3().new Node();
 		r.right = new hw3().new Node();
 
 		/* build the tree recursively */
 
-		System.out.println("Is x" + (r.label + 1) + 
+		System.out.println("Is x" + (r.feature + 1) + 
 						   " <= " + r.threshold + "?" );
 		indent = indent + "  | ";
 
-		System.out.print(indent + "Yes: ");
-		r.left = build (r.left, lte);
+		int[] count = count (dataCopy, r.feature, r.threshold);
 
-		System.out.print(indent + "No:  ");
-		r.right = build (r.right, gt);
+		System.out.print(indent + "Yes (" + count[0] + "): ");
+		r.left = build (r.left, lte, dataCopy);
+
+		System.out.print(indent + "No  (" + count[1] + "): ");
+		r.right = build (r.right, gt, dataCopy);
 
 		if (indent.length() > 4) {
 			indent = indent.substring(0, indent.length() - 4);
 		}
 
 		return r;
+	}
+
+	public static int[] count (LinkedList<float[]> data, int feature, float threshold) {
+		int yes = 0;
+		int no = 0;
+		float[] currPt;
+
+		for (int i = 0; i < data.size(); i++) {
+			currPt = data.get(i);
+			if (currPt[feature] <= threshold) {
+				data.remove(i);
+				i--;
+				yes++;
+			} else {
+				no++;
+			}
+		}
+
+		return (new int[]{yes, no});
+	}
+
+	public static int find (Node n, float[] data) {
+		if (n.left == null && n.right == null) {
+			return n.label;
+		}
+
+		if (data[n.feature] <= n.threshold) {
+			return find (n.left, data);
+		} else {
+			return find (n.right, data);
+		}
 	}
 
 	/* main function */
@@ -349,6 +389,28 @@ public class hw3 {
 
 		root = new hw3().new Node();
 
-		root = build(root, trainData);
+		/* part 1: build tree & count */
+		System.out.println("building tree from training data...\n");
+		root = build(root, trainData, trainData);
+
+		/* part 2: calculate error */
+		System.out.println("\ncalculating test error...");
+		int numErrs = 0;
+		int actualLabel, foundLabel;
+		float[] currPt;
+
+		for (int i = 0; i < testData.size(); i++) {
+			currPt = testData.get(i);
+
+			actualLabel = (int)currPt[4];
+			foundLabel = find (root, currPt);
+
+			if (foundLabel != actualLabel) { numErrs++; }
+		}
+
+		System.out.println("training error = # errors / size of data set");
+		System.out.println("training error = " + numErrs + 
+			" / " + testData.size());
+		System.out.println("training error = " + ((float)numErrs / testData.size()));
 	}
 }
